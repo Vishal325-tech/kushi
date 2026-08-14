@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For My Best Friend Kushi ✨</title>
+  <meta name="description" content="A personal digital surprise gift for Kushi created by Vishal. Cute, emotional, interactive and magical." />
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css" />
+  
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+  <!-- Animated Background Canvas -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- PERSISTENT FLOATING MUSIC NOTIFICATION BAR WITH PLAY/PAUSE CONTROLS -->
+  <div id="persistent-music-bar" class="persistent-music-bar">
+    <div class="toast-icon">🎶</div>
+    <div class="toast-text" style="flex: 1;">
+      <strong id="bar-song-title">Now Playing: Secret Message Special Song 💌</strong>
+      <span id="bar-song-subtitle">A heartfelt song for Kushi from Vishal ✨</span>
+    </div>
+    <div class="music-controls">
+      <button id="bar-play-pause-btn" class="music-control-btn" title="Play / Pause">⏸️</button>
+      <button id="bar-stop-btn" class="music-control-btn" title="Stop Song" style="background: linear-gradient(45deg, #ff4757, #ff6b81);">❌</button>
+    </div>
+  </div>
+
+  <!-- LOADING SCREEN -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="heart-beat-container">
+      <div class="heart-beat">🌸</div>
+    </div>
+    <div class="loading-text">Preparing something special for Kushi... ✨</div>
+  </div>
+
+  <!-- MAIN APPLICATION CONTENT -->
+  <main id="main-content" class="main-content">
+
+    <!-- 1. HERO SECTION -->
+    <section id="hero" class="section hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">For My Best Friend Kushi ✨</h1>
+        <h2 class="hero-subtitle">A little surprise from your friend, Vishal 🌟</h2>
+        
+        <div class="dolls-container">
+          <div class="glowing-heart-bg"></div>
+          <img src="assets/dolls/doll1.png" alt="Cute Doll Pink" class="doll-img doll-left" />
+          <img src="assets/dolls/doll2.png" alt="Cute Doll Lavender" class="doll-img doll-right" />
+        </div>
+
+        <div class="hero-text-box">
+          <p>Hey Kushi... 🌸<br />I made something special just for you.<br />Because you are not just my friend... you're my <strong>BEST FRIEND. ✨🌟</strong></p>
+        </div>
+
+        <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-top: 15px;">
+          <button id="open-surprise-btn" class="glow-button" style="font-size: 1.35rem; padding: 18px 45px;">
+            <span>Open Your Surprise 💌</span>
+          </button>
+          <button id="play-tiktik-hero-btn" class="glow-button secondary">
+            <span>🎵 A Special Song Dedicated To You ✨</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. APOLOGY & HIGHLIGHTED RUNAWAY "FORGIVE ME?" SECTION -->
+    <section id="apology" class="section">
+      <div class="glass-box apology-card">
+        <h2 class="section-title">Kushi, I'm Really Sorry 🌸</h2>
+        <p class="apology-msg">
+          If I have ever made a mistake, hurt you, upset you, misunderstood you, or made you feel bad in any way, I'm truly sorry. Sometimes I may make mistakes without realizing it, but I never want to hurt you. You are very special to me, and our friendship means a lot to me.
+        </p>
+        
+        <div class="apology-dolls">
+          <img src="assets/dolls/doll_hug.png" alt="Hugging Dolls" class="sorry-doll" style="width: 170px; height: 170px;" />
+        </div>
+
+        <!-- HIGHLIGHTED FORGIVENESS GAME BOX -->
+        <div id="forgive-highlight-box" class="forgive-highlight-box">
+          <h3 style="font-size: 1.7rem; color: #ff2a6d; margin-bottom: 18px; font-family: 'Fredoka', sans-serif;">Will You Forgive Your Friend Vishal? 🌸✨</h3>
+          
+          <div id="forgive-btn-container" style="display: flex; justify-content: center; align-items: center; gap: 30px; min-height: 80px; position: relative;">
+            <button id="forgive-yes-btn" class="glow-button" style="font-size: 1.25rem; padding: 16px 45px; position: relative; z-index: 10;">
+              YES, I Forgive You! 😊🌸
+            </button>
+            <button id="forgive-no-btn" class="glow-button secondary" style="font-size: 1.25rem; padding: 16px 45px; position: relative; z-index: 20;">
+              NO 😤
+            </button>
+          </div>
+
+          <div id="forgive-yay-banner" class="yay-banner hidden" style="margin-top: 20px;">
+            Yayyy! Thank You Kushi! Best Friends Forever! 😊🌸✨
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. YOU ARE SPECIAL SECTION -->
+    <section id="special" class="section special-section">
+      <h2 class="section-title">Do You Know How Special You Are? ✨</h2>
+      <div class="cards-grid">
+        <div class="glass-box special-card">
+          <p>You make ordinary moments special. 🌟</p>
+        </div>
+        <div class="glass-box special-card">
+          <p>Your friendship means more than words can explain. ✨</p>
+        </div>
+        <div class="glass-box special-card">
+          <p>Thank you for being there. 🌸</p>
+        </div>
+        <div class="glass-box special-card">
+          <p>I hope our friendship stays forever. 🎀</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MEANINGFUL TEDDY FRIENDSHIP GALLERY SECTION -->
+    <section id="photos" class="section">
+      <h2 class="section-title">Why You Are So Special To Me 🧸✨</h2>
+      <div class="photo-gallery-grid">
+        <div class="glass-box photo-card">
+          <img src="assets/user_photos/photo1.jfif" alt="Joy" />
+          <p style="font-size: 1.15rem; font-weight: 800; margin-top: 12px; color: #ff2a6d;">Always Brings Joy ✨</p>
+          <p style="font-size: 0.95rem; color: #4a455a; margin-top: 6px; font-weight: 600;">You bring sunshine & happiness into my life every day, Kushi!</p>
+        </div>
+        <div class="glass-box photo-card">
+          <img src="assets/user_photos/photo2.jfif" alt="Memories" />
+          <p style="font-size: 1.15rem; font-weight: 800; margin-top: 12px; color: #ff2a6d;">Precious Memories 🌟</p>
+          <p style="font-size: 0.95rem; color: #4a455a; margin-top: 6px; font-weight: 600;">Every single moment spent with you is a memory I treasure forever.</p>
+        </div>
+        <div class="glass-box photo-card">
+          <img src="assets/user_photos/photo3.jfif" alt="Smiles" />
+          <p style="font-size: 1.15rem; font-weight: 800; margin-top: 12px; color: #ff2a6d;">Endless Smiles 😊</p>
+          <p style="font-size: 0.95rem; color: #4a455a; margin-top: 6px; font-weight: 600;">Thank you for always making me laugh & smile when I need it most.</p>
+        </div>
+        <div class="glass-box photo-card">
+          <img src="assets/user_photos/photo4.jfif" alt="Bestie" />
+          <p style="font-size: 1.15rem; font-weight: 800; margin-top: 12px; color: #ff2a6d;">My Bestie Kushi 🌸</p>
+          <p style="font-size: 0.95rem; color: #4a455a; margin-top: 6px; font-weight: 600;">No matter what happens, you will always be my #1 Best Friend!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. CUTE DOLL STORY SECTION -->
+    <section id="story" class="section story-section">
+      <h2 class="section-title">Cute Doll Story 🧸</h2>
+      <div class="story-timeline">
+        <div class="glass-box story-card">
+          <span class="scene-num">Scene 1</span>
+          <img src="assets/dolls/doll1.png" alt="Scene 1" />
+          <p>"It all started with friendship..."</p>
+        </div>
+        <div class="glass-box story-card">
+          <span class="scene-num">Scene 2</span>
+          <img src="assets/user_photos/photo2.jfif" alt="Scene 2 Memories" style="width: 130px; height: 130px; border-radius: 15px; object-fit: cover;" />
+          <p>"Then came countless memories..."</p>
+        </div>
+        <div class="glass-box story-card">
+          <span class="scene-num">Scene 3</span>
+          <img src="assets/dolls/doll2.png" alt="Scene 3" />
+          <p>"Sometimes mistakes happen..."</p>
+        </div>
+        <div class="glass-box story-card">
+          <span class="scene-num">Scene 4</span>
+          <img src="assets/dolls/doll_hug.png" alt="Scene 4 Hug" />
+          <p>"But true friendship stays. ✨"</p>
+        </div>
+        <div class="glass-box story-card">
+          <span class="scene-num">Scene 5</span>
+          <img src="assets/user_photos/photo4.jfif" alt="Scene 5 Forever" style="width: 130px; height: 130px; border-radius: 15px; object-fit: cover;" />
+          <p>"And I hope our friendship continues forever. 🌟"</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. SECRET MESSAGE SECTION -->
+    <section id="secret" class="section secret-section">
+      <h2 class="section-title">Kushi, you have one secret message 💌</h2>
+      
+      <div class="envelope-wrapper" id="envelope-wrapper">
+        <div class="envelope-box">
+          <div class="envelope-flap"></div>
+          <div class="letter-content">
+            <p>No matter how many friends I have, you will always have a special place in my heart. Thank you for being my best friend. And if I ever make a mistake... please forgive your friend, Vishal. 🌸</p>
+          </div>
+        </div>
+      </div>
+
+      <button id="open-secret-btn" class="glow-button">Open It ✨</button>
+    </section>
+
+    <!-- 6. FRIENDSHIP PROMISE SECTION -->
+    <section id="promise" class="section">
+      <div class="glass-box promise-card">
+        <h2 class="section-title">A Small Promise From Your Friend, Vishal 🌟</h2>
+        <ul class="promise-list">
+          <li>✨ I'll always value our friendship.</li>
+          <li>✨ I'll try to understand you better.</li>
+          <li>✨ I'll try not to repeat my mistakes.</li>
+          <li>✨ And I'll always cherish the memories we create together.</li>
+        </ul>
+
+        <div class="forever-question">Forever Friends? 😊✨</div>
+
+        <div class="promise-btn-group">
+          <button id="promise-yes-btn" class="glow-button">YES ✨</button>
+          <button id="promise-ofcourse-btn" class="glow-button secondary">OF COURSE 🌟</button>
+        </div>
+
+        <div id="yay-banner" class="yay-banner hidden">
+          Yayyy! Best Friends Forever! 😊✨🌟
+        </div>
+
+        <div style="margin-top: 25px;">
+          <button id="play-sukha-promise-btn" class="glow-button secondary">
+            <span>🎵 A Sweet Song For Our Friendship 🌸</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. FINAL EMOTIONAL SECTION -->
+    <section id="final" class="section final-section">
+      <div class="glass-box final-card">
+        <h1 class="final-title">Kushi ✨</h1>
+        <p class="final-text">I'm sorry for every mistake from my side.</p>
+        <p class="final-text">Thank you for understanding me.</p>
+        <p class="final-text">Thank you for being my best friend.</p>
+        
+        <h2 class="final-forever-text">Let's stay best friends forever. 😊✨🌟</h2>
+
+        <div class="signature-block">
+          <p>With lots of love and friendship,</p>
+          <div class="signature-name">Your Friend, Vishal ✨</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. FINAL SURPRISE BUTTON SECTION -->
+    <section id="last-hug" class="section" style="text-align: center;">
+      <!-- ONLY MAIN HUG BUTTON -->
+      <button id="last-hug-btn" class="glow-button" style="font-size: 1.5rem; padding: 20px 50px;">
+        One Last Hug 🤗
+      </button>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <p>Made with ✨ for Kushi</p>
+      <p>Your Friend, Vishal 🌟</p>
+      <small>Developed by Vishal S H</small>
+      <small>© 2026 Vishal S H. All Rights Reserved.</small>
+    </footer>
+  </main>
+
+  <!-- SECRET MESSAGE MODAL POPUP -->
+  <div id="secret-modal" class="secret-modal">
+    <div class="modal-card">
+      <p>
+        "No matter how many friends I have, you will always have a special place in my heart. Thank you for being my best friend. And if I ever make a mistake... please forgive your friend, Vishal. 🌸"
+      </p>
+      <button id="close-modal-btn" class="glow-button">Close ✨</button>
+    </div>
+  </div>
+
+  <!-- HUG MODAL POPUP WITH RUNAWAY NOT ACCEPTED BUTTON -->
+  <div id="hug-modal" class="secret-modal">
+    <div class="modal-card">
+      <img src="assets/dolls/doll_hug.png" alt="Big Hug" style="width: 160px; height: 160px; margin-bottom: 15px;" />
+      <p style="font-size: 1.45rem; font-weight: 800; color: #ff2a6d;">
+        Sending you a BIG virtual hug, Kushi! 🤗✨
+      </p>
+      <p style="font-size: 1.2rem; color: #4a455a; margin-top: 10px; margin-bottom: 20px;">
+        Don't stay angry with your friend Vishal. 🌸
+      </p>
+      <div style="display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap; position: relative; min-height: 70px;">
+        <button id="close-hug-btn" class="glow-button" style="font-size: 1.15rem; padding: 14px 35px; position: relative; z-index: 10;">
+          Hug Accepted! 😊🌸
+        </button>
+        <button id="hug-not-accepted-btn" class="glow-button secondary" style="font-size: 1.15rem; padding: 14px 35px; position: relative; z-index: 20;">
+          Not Accepted 😤
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SONG 1: POPUP MODAL VIDEO PLAYER -->
+  <div id="tiktik-modal" class="secret-modal">
+    <div class="modal-card" style="max-width: 600px;">
+      <h2 style="font-size: 1.8rem; color: #ff2a6d; margin-bottom: 8px;">A Special Song Dedicated To You ✨</h2>
+      <p style="font-size: 1.1rem; color: #4a455a; margin-bottom: 18px;">Tik tik vajate dokyat... Dedicated to Kushi by Vishal 🌟</p>
+      <iframe id="tiktik-iframe" width="100%" height="280" src="" title="Special Song for Kushi" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);"></iframe>
+      <button id="close-tiktik-btn" class="glow-button" style="margin-top: 20px;">Close & Keep Listening ✨</button>
+    </div>
+  </div>
+
+  <!-- SONG 2: POPUP MODAL VIDEO PLAYER -->
+  <div id="sukha-modal" class="secret-modal">
+    <div class="modal-card" style="max-width: 600px;">
+      <h2 style="font-size: 1.8rem; color: #ff2a6d; margin-bottom: 8px;">A Sweet Song For Our Friendship 🌸</h2>
+      <p style="font-size: 1.1rem; color: #4a455a; margin-bottom: 18px;">Sukha kalale... Forever best friends, Kushi! ✨</p>
+      <iframe id="sukha-iframe" width="100%" height="280" src="" title="Friendship Song" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);"></iframe>
+      <button id="close-sukha-btn" class="glow-button" style="margin-top: 20px;">Close & Keep Listening ✨</button>
+    </div>
+  </div>
+
+  <!-- FLOATING MUSIC PLAYER WIDGET -->
+  <div id="music-player" class="music-widget">
+    <button id="tiktik-widget-btn" class="music-btn" title="Special Song 1">🎵 1</button>
+    <button id="sukha-widget-btn" class="music-btn" title="Friendship Song 2">🎶 2</button>
+    <button id="secret-widget-btn" class="music-btn" title="Secret Song 3">💌 3</button>
+    <button id="hug-song-widget-btn" class="music-btn" title="Hug Song 4">✨ 4</button>
+    <button id="play-pause-btn" class="music-btn" title="Play / Pause">▶</button>
+    <div class="music-label" id="music-label">🎵 Special Songs</div>
+  </div>
+
+  <!-- HIDDEN AUDIO ENGINE IFRAME -->
+  <div style="position: fixed; opacity: 0.001; pointer-events: none; top: -9999px; left: -9999px;">
+    <iframe id="audio-engine-iframe" width="10" height="10" src="" frameborder="0" allow="autoplay"></iframe>
+  </div>
+
+  <!-- JavaScript File -->
+  <script src="js/main.js"></script>
+</body>
+</html>
