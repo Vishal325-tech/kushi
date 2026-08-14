@@ -136,7 +136,7 @@
 
 
   // ------------------------------------------------------------------------
-  // 3. CONTROLLED NEARBY RUNAWAY BUTTON ENGINES (ALWAYS VISIBLE & SHORT DODGES)
+  // 3. SMALL-STEP FULL-PAGE RUNAWAY BUTTON ENGINES (SMOOTH SMALL STEPS)
   // ------------------------------------------------------------------------
   let currentOffsetX = 0;
   let currentOffsetY = 0;
@@ -146,13 +146,12 @@
     const noBtn = document.getElementById('forgive-no-btn');
     if (!noBtn) return;
 
-    const deltaX = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 60) + 40);
+    const deltaX = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 50) + 40);
     const deltaY = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 30) + 15);
 
     currentOffsetX += deltaX;
     currentOffsetY += deltaY;
 
-    // Keep offsets within safe bounds (-130px to +130px X, -60px to +60px Y)
     if (currentOffsetX > 130) currentOffsetX = 30;
     if (currentOffsetX < -130) currentOffsetX = -30;
     if (currentOffsetY > 60) currentOffsetY = 15;
@@ -167,43 +166,57 @@
     createBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 8);
   }
 
-  // CONTROLLED SHORT NEARBY JUMP FOR HUG NOT ACCEPTED BUTTON INSIDE MODAL!
-  let hugOffsetX = 0;
-  let hugOffsetY = 0;
+  // SMALL SMALL STEPS ACROSS THE ENTIRE PAGE FOR HUG NOT ACCEPTED BUTTON!
+  let hugFixedX = null;
+  let hugFixedY = null;
 
   function moveRunawayHugBtn(e) {
     if (e) e.preventDefault();
     const btn = document.getElementById('hug-not-accepted-btn');
     if (!btn) return;
 
-    const deltaX = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 50) + 30);
-    const deltaY = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 25) + 12);
+    const btnWidth = btn.offsetWidth || 130;
+    const btnHeight = btn.offsetHeight || 45;
 
-    hugOffsetX += deltaX;
-    hugOffsetY += deltaY;
+    // Initialize fixed position from current screen position if not set
+    if (hugFixedX === null || hugFixedY === null) {
+      const rect = btn.getBoundingClientRect();
+      hugFixedX = rect.left;
+      hugFixedY = rect.top;
+    }
 
-    // Keep offsets strictly bounded (-90px to +90px X, -40px to +40px Y) so it NEVER leaves the modal card!
-    if (hugOffsetX > 90) hugOffsetX = 25;
-    if (hugOffsetX < -90) hugOffsetX = -25;
-    if (hugOffsetY > 40) hugOffsetY = 10;
-    if (hugOffsetY < -40) hugOffsetY = -10;
+    // Small small steps (45px to 80px per step across the screen)
+    const stepX = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 35) + 45);
+    const stepY = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 25) + 30);
 
-    btn.style.position = 'relative';
-    btn.style.left = 'auto';
-    btn.style.top = 'auto';
-    btn.style.transform = `translate(${hugOffsetX}px, ${hugOffsetY}px)`;
-    btn.style.transition = 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-    btn.style.zIndex = '999';
+    hugFixedX += stepX;
+    hugFixedY += stepY;
 
-    const rect = btn.getBoundingClientRect();
-    createBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 8);
+    // Constrain strictly within viewport bounds (40px margin) so it stays 100% visible!
+    const margin = 40;
+    const maxX = window.innerWidth - btnWidth - margin;
+    const maxY = window.innerHeight - btnHeight - margin;
+
+    if (hugFixedX < margin) hugFixedX = margin + 40;
+    if (hugFixedX > maxX) hugFixedX = maxX - 40;
+    if (hugFixedY < margin) hugFixedY = margin + 40;
+    if (hugFixedY > maxY) hugFixedY = maxY - 40;
+
+    btn.style.position = 'fixed';
+    btn.style.left = `${hugFixedX}px`;
+    btn.style.top = `${hugFixedY}px`;
+    btn.style.transform = 'none';
+    btn.style.zIndex = '10000000'; // Highest z-index above modal
+    btn.style.transition = 'left 0.22s ease, top 0.22s ease';
+
+    createBurst(hugFixedX + btnWidth / 2, hugFixedY + btnHeight / 2, 8);
   }
 
   function resetHugNotAcceptedBtn() {
     const btn = document.getElementById('hug-not-accepted-btn');
     if (btn) {
-      hugOffsetX = 0;
-      hugOffsetY = 0;
+      hugFixedX = null;
+      hugFixedY = null;
       btn.style.position = 'relative';
       btn.style.left = 'auto';
       btn.style.top = 'auto';
