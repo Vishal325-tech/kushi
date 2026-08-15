@@ -293,7 +293,7 @@
     <div class="modal-card" style="max-width: 600px;">
       <h2 style="font-size: 1.8rem; color: #ff2a6d; margin-bottom: 8px;">A Special Song Dedicated To You ✨</h2>
       <p style="font-size: 1.1rem; color: #4a455a; margin-bottom: 18px;">Tik tik vajate dokyat... Dedicated to Kushi by Vishal 🌟</p>
-      <iframe id="tiktik-iframe" width="100%" height="280" src="" title="Special Song for Kushi" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);"></iframe>
+      <div id="tiktik-iframe" style="width: 100%; aspect-ratio: 16/9; border-radius: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);"></div>
       <button id="close-tiktik-btn" class="glow-button" style="margin-top: 20px;">Close & Keep Listening ✨</button>
     </div>
   </div>
@@ -303,7 +303,7 @@
     <div class="modal-card" style="max-width: 600px;">
       <h2 style="font-size: 1.8rem; color: #ff2a6d; margin-bottom: 8px;">A Sweet Song For Our Friendship 🌸</h2>
       <p style="font-size: 1.1rem; color: #4a455a; margin-bottom: 18px;">Sukha kalale... Forever best friends, Kushi! ✨</p>
-      <iframe id="sukha-iframe" width="100%" height="280" src="" title="Friendship Song" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);"></iframe>
+      <div id="sukha-iframe" style="width: 100%; aspect-ratio: 16/9; border-radius: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);"></div>
       <button id="close-sukha-btn" class="glow-button" style="margin-top: 20px;">Close & Keep Listening ✨</button>
     </div>
   </div>
@@ -318,9 +318,9 @@
     <div class="music-label" id="music-label">🎵 Special Songs</div>
   </div>
 
-  <!-- HIDDEN AUDIO ENGINE IFRAME -->
-  <div style="position: fixed; opacity: 0.001; pointer-events: none; top: -9999px; left: -9999px;">
-    <iframe id="audio-engine-iframe" width="10" height="10" src="" frameborder="0" allow="autoplay"></iframe>
+  <!-- HIDDEN AUDIO ENGINE CONTAINER (1x1px visible for mobile compatibility) -->
+  <div style="position: fixed; width: 1px; height: 1px; overflow: hidden; opacity: 0.01; pointer-events: none; bottom: 0; left: 0; z-index: -1;">
+    <div id="audio-engine-iframe"></div>
   </div>
 
   <!-- JavaScript File -->

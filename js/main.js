@@ -1,5 +1,6 @@
 /* ==========================================================================
    FOR MY BEST FRIEND KUSHI - JAVASCRIPT
+   Mobile-compatible audio engine using YouTube IFrame Player API
    ========================================================================== */
 
 (function () {
@@ -28,62 +29,210 @@
 
 
   // ------------------------------------------------------------------------
-  // 2. PERSISTENT FLOATING MUSIC CONTROL BAR & AUDIO ENGINE
+  // 2. YOUTUBE IFRAME PLAYER API - MOBILE COMPATIBLE AUDIO ENGINE
   // ------------------------------------------------------------------------
-  let activeSongKey = null;
-  let isMusicPlaying = false;
 
-  const songDetails = {
-    'tiktik': { title: 'A Special Song Dedicated To You ✨', sub: 'Tik tik vajate dokyat... Dedicated to Kushi by Vishal 🌟', iframeId: 'tiktik-iframe', modalId: 'tiktik-modal', url: 'https://www.youtube.com/embed/xucrEzhXbHI?enablejsapi=1&autoplay=1', hasVideo: true },
-    'sukha': { title: 'A Sweet Song For Our Friendship 🌸', sub: 'Sukha kalale... Forever best friends, Kushi! ✨', iframeId: 'sukha-iframe', modalId: 'sukha-modal', url: 'https://www.youtube.com/embed/nxH-x_OjGvQ?enablejsapi=1&autoplay=1', hasVideo: true },
-    'secret-song': { title: 'Secret Message Special Song 💌', sub: 'A heartfelt song for Kushi from Vishal ✨', iframeId: 'audio-engine-iframe', modalId: null, url: 'https://www.youtube.com/embed/sMe4Zzwq5bM?enablejsapi=1&autoplay=1', hasVideo: false },
-    'hug-song': { title: 'Special Friendship Hug Song ✨', sub: 'A warm virtual hug & sweet song for Kushi from Vishal 🌟', iframeId: 'audio-engine-iframe', modalId: null, url: 'https://www.youtube.com/embed/zULjde7eOXs?enablejsapi=1&autoplay=1', hasVideo: false }
+  // Load the YouTube IFrame Player API script
+  const ytScript = document.createElement('script');
+  ytScript.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(ytScript);
+
+  let ytApiReady = false;
+  let pendingPlay = null; // { songKey, afterReady }
+
+  // This global callback is called by the YouTube API once it's loaded
+  window.onYouTubeIframeAPIReady = function () {
+    ytApiReady = true;
+    // If a song was requested before API was ready, play it now
+    if (pendingPlay) {
+      playSongByKey(pendingPlay.songKey);
+      pendingPlay = null;
+    }
   };
 
-  function sendIframeCommand(iframeId, command) {
-    const iframe = document.getElementById(iframeId);
-    if (iframe && iframe.contentWindow) {
+  let activeSongKey = null;
+  let isMusicPlaying = false;
+  let activePlayer = null; // current YT.Player instance
+
+  const songDetails = {
+    'tiktik': {
+      title: 'A Special Song Dedicated To You ✨',
+      sub: 'Tik tik vajate dokyat... Dedicated to Kushi by Vishal 🌟',
+      containerId: 'tiktik-iframe',
+      modalId: 'tiktik-modal',
+      videoId: 'xucrEzhXbHI',
+      hasVideo: true
+    },
+    'sukha': {
+      title: 'A Sweet Song For Our Friendship 🌸',
+      sub: 'Sukha kalale... Forever best friends, Kushi! ✨',
+      containerId: 'sukha-iframe',
+      modalId: 'sukha-modal',
+      videoId: 'nxH-x_OjGvQ',
+      hasVideo: true
+    },
+    'secret-song': {
+      title: 'Secret Message Special Song 💌',
+      sub: 'A heartfelt song for Kushi from Vishal ✨',
+      containerId: 'audio-engine-iframe',
+      modalId: null,
+      videoId: 'sMe4Zzwq5bM',
+      hasVideo: false
+    },
+    'hug-song': {
+      title: 'Special Friendship Hug Song ✨',
+      sub: 'A warm virtual hug & sweet song for Kushi from Vishal 🌟',
+      containerId: 'audio-engine-iframe',
+      modalId: null,
+      videoId: 'zULjde7eOXs',
+      hasVideo: false
+    }
+  };
+
+  // Track created YT.Player instances to avoid duplicates
+  const playerInstances = {};
+
+  function destroyPlayer(containerId) {
+    if (playerInstances[containerId]) {
       try {
-        iframe.contentWindow.postMessage(JSON.stringify({
-          'event': 'command',
-          'func': command,
-          'args': ''
-        }), '*');
-      } catch (e) {}
+        playerInstances[containerId].destroy();
+      } catch (e) { }
+      delete playerInstances[containerId];
     }
   }
 
-  // GUARANTEES ONLY 1 SONG PLAYS AT A TIME!
-  function playSongByKey(songKey) {
-    // 1. Stop all other video/audio iframes
-    Object.keys(songDetails).forEach(key => {
-      const s = songDetails[key];
-      if (key !== songKey) {
-        if (s.iframeId) {
-          sendIframeCommand(s.iframeId, 'pauseVideo');
-          const iframe = document.getElementById(s.iframeId);
-          if (iframe) iframe.src = ''; // reset so audio stops instantly
-        }
+  function stopAllPlayers() {
+    Object.keys(playerInstances).forEach(id => {
+      try {
+        playerInstances[id].pauseVideo();
+        playerInstances[id].destroy();
+      } catch (e) { }
+      delete playerInstances[id];
+    });
+
+    // Also reset any leftover iframes
+    ['tiktik-iframe', 'sukha-iframe', 'audio-engine-iframe'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.tagName === 'IFRAME') {
+        el.src = '';
       }
     });
+  }
+
+  // Recreate the container div so YT.Player can use it fresh
+  function resetContainer(containerId) {
+    const existing = document.getElementById(containerId);
+    if (!existing) return;
+
+    // If the element is already a div placeholder, it's ready
+    if (existing.tagName === 'DIV') return;
+
+    // Replace iframe with a fresh div
+    const div = document.createElement('div');
+    div.id = containerId;
+
+    // Copy over styles for video modals
+    if (containerId === 'tiktik-iframe' || containerId === 'sukha-iframe') {
+      div.style.width = '100%';
+      div.style.borderRadius = '18px';
+      div.style.boxShadow = '0 10px 25px rgba(0,0,0,0.15)';
+      div.style.aspectRatio = '16/9';
+    }
+
+    existing.parentNode.replaceChild(div, existing);
+  }
+
+  // GUARANTEES ONLY 1 SONG PLAYS AT A TIME - MOBILE COMPATIBLE!
+  function playSongByKey(songKey) {
+    if (!ytApiReady) {
+      // Queue the play request for when the API loads
+      pendingPlay = { songKey };
+      return;
+    }
+
+    // 1. Stop and destroy all existing players
+    stopAllPlayers();
 
     activeSongKey = songKey;
     isMusicPlaying = true;
     const song = songDetails[songKey];
 
-    // 2. Play current song
-    const targetIframe = document.getElementById(song.iframeId);
-    if (targetIframe) {
-      targetIframe.src = song.url;
+    // 2. Reset the container element
+    resetContainer(song.containerId);
+
+    // 3. Create a new YT.Player — this starts playback directly from user gesture
+    const playerConfig = {
+      videoId: song.videoId,
+      playerVars: {
+        autoplay: 1,      // autoplay (works on mobile when triggered by user gesture)
+        playsinline: 1,    // CRITICAL for iOS: play inline instead of fullscreen
+        controls: 1,
+        rel: 0,
+        modestbranding: 1,
+        enablejsapi: 1
+      },
+      events: {
+        onReady: function (event) {
+          // Force play on ready (ensures mobile playback)
+          event.target.playVideo();
+        },
+        onStateChange: function (event) {
+          // Update play/pause state when user interacts with YouTube controls
+          if (event.data === YT.PlayerState.PAUSED) {
+            isMusicPlaying = false;
+            const barPlayBtn = document.getElementById('bar-play-pause-btn');
+            if (barPlayBtn) barPlayBtn.textContent = '▶️';
+          } else if (event.data === YT.PlayerState.PLAYING) {
+            isMusicPlaying = true;
+            const barPlayBtn = document.getElementById('bar-play-pause-btn');
+            if (barPlayBtn) barPlayBtn.textContent = '⏸️';
+          }
+        },
+        onError: function (event) {
+          console.warn('YouTube player error:', event.data);
+        }
+      }
+    };
+
+    // For non-video songs, set minimal size but keep it technically visible
+    // (hidden players may not play on some mobile browsers)
+    if (!song.hasVideo) {
+      playerConfig.width = 1;
+      playerConfig.height = 1;
+    } else {
+      playerConfig.width = '100%';
+      playerConfig.height = 280;
     }
 
-    // 3. Open video modal if song has video popup
+    try {
+      const player = new YT.Player(song.containerId, playerConfig);
+      playerInstances[song.containerId] = player;
+      activePlayer = player;
+    } catch (e) {
+      console.warn('Failed to create YT.Player:', e);
+      // Fallback: use iframe src directly
+      fallbackIframePlay(song);
+    }
+
+    // 4. Open video modal if song has video popup
     if (song.hasVideo && song.modalId) {
       const modal = document.getElementById(song.modalId);
       if (modal) modal.classList.add('active');
     }
 
-    // 4. Update persistent floating notification control bar
+    // 5. Update persistent floating notification control bar
+    updateMusicBar(song);
+  }
+
+  // Fallback for older browsers that don't support YT.Player well
+  function fallbackIframePlay(song) {
+    const iframe = document.getElementById(song.containerId);
+    if (iframe && iframe.tagName === 'IFRAME') {
+      iframe.src = `https://www.youtube.com/embed/${song.videoId}?enablejsapi=1&autoplay=1&playsinline=1`;
+    }
+  }
+
+  function updateMusicBar(song) {
     const bar = document.getElementById('persistent-music-bar');
     const barTitle = document.getElementById('bar-song-title');
     const barSub = document.getElementById('bar-song-subtitle');
@@ -100,14 +249,8 @@
   }
 
   function stopAllMusic() {
-    Object.keys(songDetails).forEach(key => {
-      const s = songDetails[key];
-      if (s.iframeId) {
-        sendIframeCommand(s.iframeId, 'pauseVideo');
-        const iframe = document.getElementById(s.iframeId);
-        if (iframe) iframe.src = '';
-      }
-    });
+    stopAllPlayers();
+    activePlayer = null;
     isMusicPlaying = false;
 
     const barPlayBtn = document.getElementById('bar-play-pause-btn');
@@ -115,22 +258,26 @@
   }
 
   function togglePlayPause() {
-    if (!activeSongKey) {
+    if (!activeSongKey || !activePlayer) {
       playSongByKey('tiktik');
       return;
     }
 
-    const song = songDetails[activeSongKey];
     const barPlayBtn = document.getElementById('bar-play-pause-btn');
 
-    if (isMusicPlaying) {
-      sendIframeCommand(song.iframeId, 'pauseVideo');
-      isMusicPlaying = false;
-      if (barPlayBtn) barPlayBtn.textContent = '▶️';
-    } else {
-      sendIframeCommand(song.iframeId, 'playVideo');
-      isMusicPlaying = true;
-      if (barPlayBtn) barPlayBtn.textContent = '⏸️';
+    try {
+      if (isMusicPlaying) {
+        activePlayer.pauseVideo();
+        isMusicPlaying = false;
+        if (barPlayBtn) barPlayBtn.textContent = '▶️';
+      } else {
+        activePlayer.playVideo();
+        isMusicPlaying = true;
+        if (barPlayBtn) barPlayBtn.textContent = '⏸️';
+      }
+    } catch (e) {
+      // Player may have been destroyed, restart
+      playSongByKey(activeSongKey);
     }
   }
 
@@ -456,9 +603,9 @@
       const envelope = document.getElementById('envelope-wrapper');
       if (envelope) envelope.classList.add('open');
 
-      setTimeout(() => {
-        playSongByKey('secret-song');
-      }, 400);
+      // Play song IMMEDIATELY from click handler (no setTimeout delay!)
+      // This is critical for mobile - the user gesture must directly trigger playback
+      playSongByKey('secret-song');
 
       setTimeout(() => {
         const secretModal = document.getElementById('secret-modal');
@@ -522,9 +669,8 @@
       const rect = targetElem.getBoundingClientRect();
       createBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 50);
 
-      setTimeout(() => {
-        playSongByKey('secret-song');
-      }, 300);
+      // Play song IMMEDIATELY from click handler (mobile-critical!)
+      playSongByKey('secret-song');
 
       setTimeout(() => {
         const secretModal = document.getElementById('secret-modal');
@@ -560,9 +706,8 @@
         yayBanner.style.display = 'block';
       }
 
-      setTimeout(() => {
-        playSongByKey('sukha');
-      }, 600);
+      // Play song IMMEDIATELY from click handler (mobile-critical!)
+      playSongByKey('sukha');
       return;
     }
 
@@ -576,9 +721,8 @@
       const hugModal = document.getElementById('hug-modal');
       if (hugModal) hugModal.classList.add('active');
 
-      setTimeout(() => {
-        playSongByKey('hug-song');
-      }, 500);
+      // Play song IMMEDIATELY from click handler (mobile-critical!)
+      playSongByKey('hug-song');
       return;
     }
 
